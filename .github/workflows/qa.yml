@@ -1,0 +1,18 @@
+name: Quality assurance
+
+on:
+  push:
+    branches: [ "main" ]
+  pull_request:
+    branches: [ "main" ]
+  workflow_dispatch:
+
+jobs:
+  qa:
+    runs-on: ubuntu-latest
+    steps:
+    - uses: actions/checkout@v2
+    - name: Sanity checks
+      run: ./qa/sanity-checks/sanity-check.sh
+    - name: Block timestamp offset checks
+      run: python3 qa/block-timestamps/check-block-timestamps.py
