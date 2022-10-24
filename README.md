@@ -20,12 +20,22 @@ height hash                                                             timestam
 
 To add your block arrival times, create a CSV file with the above format.
 Make sure the timestamps are in millisecond precision, and you've added a name
-for the source. You can use `cat timestamps.csv your-timestamps.csv > new-timestamps.csv`
+for the source. You can use `cat timestamps.csv my-timestamps.csv > new-timestamps.csv`
 to create a new, unsorted timestamp file. To sort it, you can use
 `LC_ALL=C sort --reverse --check --unique new-timestamps.csv > timestamps.csv`.
 
-
 Also, please remember to update the data-availability graph (see below).
+
+### Parsing Bitcoin Core `debug.log`
+
+Block arrival timestamps can be parsed from the Bitcoin Core `debug.log`.
+A Python tool is provided under `contrib/process-debug-log.py`. This expects
+a `debug.log` as input file, a CSV file output name, and the name of the data
+source.
+
+```
+python3 contrib/process-debug-log.py /home/b10c/.bitcoin/debug.log my-timestamps.csv "0xb10c node2"
+```
 
 ## Quality Assurance
 
