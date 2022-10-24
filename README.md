@@ -24,6 +24,9 @@ for the source. You can use `cat timestamps.csv your-timestamps.csv > new-timest
 to create a new, unsorted timestamp file. To sort it, you can use
 `LC_ALL=C sort --reverse --check --unique new-timestamps.csv > timestamps.csv`.
 
+
+Also, please remember to update the data-availability graph (see below).
+
 ## Quality Assurance
 
 The dataset is run through automatic quality assurance checks in the CI. A
@@ -35,3 +38,19 @@ For this, we maintain a list of height and header timestamps in
 list might need to be updated. This can be done with the Bash script
 "qa/block-timestamps/update-block-timestamps.sh" requiring a Bitcoin Core
 instance with the REST server enabled.
+
+A data availability graph can be generated with the tool 
+`qa/data-availability/gen-mermaid.py`. This should be updated when adding a
+new data source.
+
+```mermaid
+gantt
+dateFormat x
+title data availability (not showing potential per-source holes)
+todayMarker off
+
+0xb10c memo: 1635945250000, 1666268995000
+0xB10C monitoring1: 1605513978094, 1666260553663
+0xb10c memo-old: 1562848974000, 1585739362000
+
+```
