@@ -16,3 +16,5 @@ jobs:
       run: ./qa/sanity-checks/sanity-check.sh
     - name: Block timestamp offset checks
       run: python3 qa/block-timestamps/check-block-timestamps.py
+    - name: Check gantt graph up-to-date
+      run: ./qa/data-availability/chech-graph-uptodate.sh
