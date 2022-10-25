@@ -22,7 +22,7 @@ To add your block arrival times, create a CSV file with the above format.
 Make sure the timestamps are in millisecond precision, and you've added a name
 for the source. You can use `cat timestamps.csv your-timestamps.csv > new-timestamps.csv`
 to create a new, unsorted timestamp file. To sort it, you can use
-`LC_ALL=C sort --reverse --check --unique new-timestamps.csv > timestamps.csv`.
+`LC_ALL=C sort --reverse --unique new-timestamps.csv > timestamps.csv`.
 
 
 Also, please remember to update the data-availability graph (see below).
