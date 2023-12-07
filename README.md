@@ -59,8 +59,8 @@ dateFormat x
 title data availability (not showing potential per-source holes)
 todayMarker off
 
+0xB10C monitoring1: 1605513978094, 1701968604513
 0xb10c memo: 1635945250000, 1666268995000
-0xB10C monitoring1: 1605513978094, 1666260553663
 0xb10c memo-old: 1562848974000, 1605772694000
 
 ```
