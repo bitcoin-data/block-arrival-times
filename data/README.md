@@ -6,6 +6,11 @@
 - contributed by [OliverOffing](https://github.com/OliverOffing)
     - `offing-gcp.csv` from a Bitcoin Core debug.log
 
+- contributed by [KIT DSN Bitcoin Monitoring](https://www.dsn.kastel.kit.edu/bitcoin/)
+    - `KIT_monitor1.csv`
+    - `KIT_monitor2.csv`
+    - `KIT_monitorB.csv`
+
 - contributed by [n-thumann](https://github.com/n-thumann)
     - `n-thumann.csv` from a Bitcoin Core debug.log
 
