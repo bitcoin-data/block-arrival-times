@@ -59,6 +59,7 @@ dateFormat x
 title data availability (not showing potential per-source holes)
 todayMarker off
 
+darosior node0: 1676970378000, 1702022714000
 0xB10C monitoring1: 1605513978094, 1701968604513
 0xb10c memo: 1635945250000, 1666268995000
 0xb10c memo-old: 1562848974000, 1605772694000
