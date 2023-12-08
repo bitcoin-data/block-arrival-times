@@ -59,6 +59,7 @@ dateFormat x
 title data availability (not showing potential per-source holes)
 todayMarker off
 
+n-thumann: 1669583939000, 1702072477000
 darosior node0: 1676970378000, 1702022714000
 0xB10C monitoring1: 1605513978094, 1701968604513
 0xb10c memo: 1635945250000, 1666268995000
