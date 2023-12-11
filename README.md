@@ -1,55 +1,50 @@
 # Bitcoin Block Arrival Time Dataset
 
-A dataset of block arrival times at different nodes.
+A dataset of block arrival times as seen by multiple nodes on the Bitcoin Network.
 
-## CSV Format
+## Dataset
 
-The `timestamps.csv` file contains the block `height`, `hash`, the millisecond
-`timestamp` it arrived (not the timestamp in the header), and the name of the
-`source`. It does **not** contain a CSV header.
+The dataset is split over multiple CSV files in the `data` directory. One CSV
+file per source. Each file contains the block `height`, the header `hash`, the
+millisecond `timestamp` the block arrived/was first connected at the node. The
+CVS files do not have a header.
 
 Example:
 ```
-height hash                                                             timestamp     source
-759483,00000000000000000002b74f1fd927768b2bfd52d2a5229826303d480db5c76a,1666250167839,0xB10C monitoring1
-759483,00000000000000000002b74f1fd927768b2bfd52d2a5229826303d480db5c76a,1666250167000,0xb10c memo
-759482,00000000000000000006e1c51365637bbc9a977b6bc027c00613025c1625a00a,1666249466074,0xB10C monitoring1
+759483,00000000000000000002b74f1fd927768b2bfd52d2a5229826303d480db5c76a,1666250167839
+759483,00000000000000000002b74f1fd927768b2bfd52d2a5229826303d480db5c76a,1666250167000
+759482,00000000000000000006e1c51365637bbc9a977b6bc027c00613025c1625a00a,1666249466074
 ```
+
+The sources can be combined into one, multi-source CSV file with the Python
+script `contrib/combine.py`.
 
 ## Adding Data
 
-To add your block arrival times, create a CSV file with the above format.
-Make sure the timestamps are in millisecond precision, and you've added a name
-for the source. You can use `cat timestamps.csv my-timestamps.csv > new-timestamps.csv`
-to create a new, unsorted timestamp file. To sort it, you can use
-`LC_ALL=C sort --reverse --unique new-timestamps.csv > timestamps.csv`.
-
-Also, please remember to update the data-availability graph (see below).
-
-### Parsing Bitcoin Core `debug.log`
+To add your block arrival times, create a CSV file with the above format in
+the data directory. Make sure the timestamps are in millisecond precision.
+Also, remember to update the data-availability graph (see below).
 
 Block arrival timestamps can be parsed from the Bitcoin Core `debug.log`.
 A Python tool is provided under `contrib/process-debug-log.py`. This expects
-a `debug.log` as input file, a CSV file output name, and the name of the data
-source.
+a `debug.log` as input file, and a CSV file output name.
 
 ```
-python3 contrib/process-debug-log.py /home/b10c/.bitcoin/debug.log my-timestamps.csv "0xb10c node2"
+python3 contrib/process-debug-log.py /home/b10c/.bitcoin/debug.log data/my-timestamps.csv
 ```
 
 ## Quality Assurance
 
-The dataset is run through automatic quality assurance checks in the CI. A
-sanity check tests if the dataset is sorted and doesn't contain duplicate
-rows. Additionally, there is a check for the arrival timestamps. We assume
-these should be either two hours before or after the block header timestamp.
-For this, we maintain a list of height and header timestamps in
+The dataset is run through automatic quality assurance checks in the CI.
+There is a check for the arrival timestamps. We assume these should be
+either two hours before or after the block header timestamp. For this, we
+maintain a list of height and header timestamps in
 "qa/block-timestamps/block-timestamps.csv". When adding new timestamps, the
 list might need to be updated. This can be done with the Bash script
 "qa/block-timestamps/update-block-timestamps.sh" requiring a Bitcoin Core
 instance with the REST server enabled.
 
-A data availability graph can be generated with the tool 
+The following availability graph can be generated with the tool
 `qa/data-availability/gen-mermaid.py`. This should be updated when adding a
 new data source.
 
@@ -60,9 +55,9 @@ title data availability (not showing potential per-source holes)
 todayMarker off
 
 n-thumann: 1669583939000, 1702072477000
-darosior node0: 1676970378000, 1702022714000
-0xB10C monitoring1: 1605513978094, 1701968604513
-0xb10c memo: 1635945250000, 1666268995000
-0xb10c memo-old: 1562848974000, 1605772694000
+darosior_node0: 1676970378000, 1702022714000
+0xb10c_monitoring1: 1605513978094, 1701968604513
+0xb10c_memo: 1635945250000, 1666268995000
+0xb10c_memo-old: 1562848974000, 1605772694000
 
 ```

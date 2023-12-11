@@ -57,18 +57,15 @@ def main():
         "input", help="Debug log file used as input.", type=argparse.FileType('r'))
     parser.add_argument("output", help="CSV output file.",
                         type=argparse.FileType('w'))
-    parser.add_argument(
-        "source", help="Debug log file source (e.g. the person that provided it).")
     args = parser.parse_args()
 
-    print(
-        f"Reading from {args.input.name} and writing to {args.output.name} with the source name: '{args.source}'")
+    print(f"Reading from {args.input.name} and writing to {args.output.name}:")
 
     writer = csv.writer(args.output, quotechar='"', quoting=csv.QUOTE_MINIMAL)
-    process(args.input, writer, args.source)
+    process(args.input, writer)
 
 
-def process(inputf, writer, source):
+def process(inputf, writer):
     skipped = 0
     written = 0
 
@@ -102,7 +99,7 @@ def process(inputf, writer, source):
             timestamp_ms = int(datetime.datetime.timestamp(timestamp)*1000)
 
             if check(blockhash, timedelta, progress):
-                output(writer, timestamp_ms, blockhash, height, source)
+                output(writer, timestamp_ms, blockhash, height)
                 written += 1
             else:
                 print(f"Skipping block height={height} hash={blockhash} with timedelta={timedelta} and progress={progress}")
@@ -125,8 +122,8 @@ def check(bhash, timedelta, progress) -> bool:
     return True
 
 
-def output(writer, time, bhash, height, source):
-    writer.writerow([height, bhash, time, source])
+def output(writer, time, bhash, height):
+    writer.writerow([height, bhash, time])
 
 
 if __name__ == '__main__':
