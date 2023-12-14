@@ -54,6 +54,7 @@ dateFormat x
 title data availability (not showing potential per-source holes)
 todayMarker off
 
+vostrnad_node1: 1678416045000, 1702535282000
 n-thumann: 1669583939000, 1702072477000
 darosior_node0: 1676970378000, 1702022714000
 0xb10c_monitoring1: 1605513978094, 1701968604513
