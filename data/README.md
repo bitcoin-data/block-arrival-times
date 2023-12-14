@@ -1,5 +1,8 @@
 # Data Sources
 
+- contributed by [OliverOffing](https://github.com/OliverOffing)
+    - `offing-gcp.csv` from a Bitcoin Core debug.log
+
 - contributed by [n-thumann](https://github.com/n-thumann)
     - `n-thumann.csv` from a Bitcoin Core debug.log
 
