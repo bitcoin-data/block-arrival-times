@@ -62,16 +62,16 @@ print("\nStatistics about offsets from block timestamps:")
 
 template = "{:<25} {:<10} {:<10} {:<12} {:<12} {:<12} {}"
 print(template.format("source", "count", "min",
-      "max", "mean", "stdev", "quantiles[ms]"))
+      "max", "mean", "stdev", "quantiles[s]"))
 for source in per_source_offset:
     offsets = per_source_offset[source]
     print(template.format(
         source,
         "{}".format(len(offsets)),
-        "{:.0f}ms".format(min(offsets)),
-        "{:.0f}ms".format(max(offsets)),
-        "{:.2f}ms".format(statistics.mean(offsets)),
-        "{:.2f}ms".format(statistics.stdev(offsets)),
+        "{:.0f}s".format(min(offsets)),
+        "{:.0f}s".format(max(offsets)),
+        "{:.2f}s".format(statistics.mean(offsets)),
+        "{:.2f}s".format(statistics.stdev(offsets)),
         "{}".format(statistics.quantiles(offsets))))
 
 if has_error:
