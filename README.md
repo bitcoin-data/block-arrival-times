@@ -39,9 +39,9 @@ The dataset is run through automatic quality assurance checks in the CI.
 There is a check for the arrival timestamps. We assume these should be
 either two hours before or after the block header timestamp. For this, we
 maintain a list of height and header timestamps in
-"qa/block-timestamps/block-timestamps.csv". When adding new timestamps, the
+`qa/block-timestamps/block-timestamps.csv`. When adding new timestamps, the
 list might need to be updated. This can be done with the Bash script
-"qa/block-timestamps/update-block-timestamps.sh" requiring a Bitcoin Core
+`qa/block-timestamps/update-block-timestamps.sh` requiring a Bitcoin Core
 instance with the REST server enabled.
 
 The following availability graph can be generated with the tool
