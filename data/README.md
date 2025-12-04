@@ -22,4 +22,4 @@
     - `0xb10c_memo.csv` newer mempool.observer database (ZMQ based timestamaps)
     - `0xb10c_monitoring1.csv` export from general monitoring (ZMQ based timestamps)
     - `0xb10c_rs2.csv` exported from a debug.log
-
+    - `0xb10c_peer-observer-*.csv` exported from peer-observer Bitcoin Core node debug.logs

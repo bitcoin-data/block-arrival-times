@@ -54,6 +54,12 @@ dateFormat x
 title data availability (not showing potential per-source holes)
 todayMarker off
 
+0xb10c_peer-observer-frank: 1707523605000, 1764633510232
+0xb10c_peer-observer-charlie: 1707523605000, 1764633502435
+0xb10c_peer-observer-erin: 1707523606000, 1764633502410
+0xb10c_peer-observer-bob: 1707523605000, 1764633502292
+0xb10c_peer-observer-dave: 1707523606000, 1764633502266
+0xb10c_peer-observer-alice: 1707523605000, 1764633502241
 0xb10c_rs2: 1656356008000, 1727433209000
 vostrnad_node1: 1678416045000, 1702535282000
 n-thumann: 1669583939000, 1702072477000
