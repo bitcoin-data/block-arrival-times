@@ -76,6 +76,9 @@ def process(inputf, writer):
                 if match := patt.search(line):
                     matchgroups.update(match.groupdict())
 
+            if line.startswith("[*] "):
+                print("Logging was rate-limited in line:", line.strip())
+                line = line.replace("[*] ", "")
             timestamp = get_time(line)
 
             # Bitcoin Core 0.12 has UpdateTip: lines that just display the warning, so skip those.
