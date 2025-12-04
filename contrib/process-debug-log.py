@@ -109,7 +109,7 @@ def process(inputf, writer):
 
 
 def check(bhash, timedelta, progress) -> bool:
-    assert(progress > 0)
+    assert(progress >= 0)
     assert(progress <= 1)
     assert(len(bhash) == 64)
 
