@@ -1,0 +1,356 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>Bitcoin Block Arrival Time Dataset</title>
+<script src="https://cdn.jsdelivr.net/npm/chart.js@4.4.0/dist/chart.umd.min.js"></script>
+<style>
+:root {
+  --bg:      #0f172a;
+  --surface: #1e293b;
+  --border:  #334155;
+  --text:    #e2e8f0;
+  --dim:     #94a3b8;
+  --orange:  #f97316;
+}
+
+* { box-sizing: border-box; margin: 0; padding: 0; }
+body { background: var(--bg); color: var(--text); font-family: system-ui, -apple-system, sans-serif; font-size: 15px; line-height: 1.5; }
+a { color: var(--orange); text-decoration: none; }
+a:hover { text-decoration: underline; }
+
+header, main, footer { max-width: 1300px; margin: 0 auto; padding: 0 1.5rem; }
+header { padding: 2.5rem 1.5rem 1.5rem; }
+header h1 { font-size: 1.75rem; font-weight: 700; color: var(--orange); margin-bottom: 0.4rem; }
+header p { color: var(--dim); max-width: 780px; margin-top: 0.75rem; }
+main { padding-top: 2rem; padding-bottom: 3rem; }
+section { margin-bottom: 3rem; }
+h2 { font-size: 1.1rem; font-weight: 600; padding-bottom: 0.5rem; }
+.desc { color: var(--dim); font-size: 0.85rem; margin-bottom: 1.25rem; max-width: 900px; }
+footer { border-top: 1px solid var(--border); padding: 1rem 1.5rem 1.5rem; color: var(--dim); font-size: 0.8rem; display: flex; justify-content: space-between; flex-wrap: wrap; gap: 0.5rem; }
+.data-link { display: inline-block; margin-top: 1.25rem; padding: 0.5rem 1rem; border: 1px solid var(--orange); border-radius: 5px; color: var(--orange); font-weight: 600; font-size: 0.9rem; }
+.data-link:hover { background: var(--orange); color: var(--bg); text-decoration: none; }
+
+.stat-grid { display: grid; grid-template-columns: repeat(auto-fit, minmax(160px, 1fr)); gap: 0.75rem; margin-top: 0.75rem; }
+.stat-card { background: var(--surface); border: 1px solid var(--border); border-radius: 6px; padding: 0.9rem 1rem; }
+.stat-value { font-size: 1.4rem; font-weight: 700; font-family: monospace; color: var(--orange); }
+.stat-label { font-size: 0.75rem; color: var(--dim); margin-top: 0.15rem; }
+
+#avail-wrap { overflow-x: auto; }
+.avail-axis { position: relative; height: 18px; margin-left: 240px; margin-bottom: 4px; }
+.avail-tick { position: absolute; font-size: 0.68rem; color: var(--dim); transform: translateX(-50%); user-select: none; }
+.avail-row { display: flex; align-items: center; height: 18px; margin-bottom: 2px; }
+.avail-label { width: 240px; min-width: 240px; font-family: monospace; font-size: 0.72rem; color: var(--dim); text-align: right; padding-right: 0.6rem; overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+.avail-bar { flex: 1; height: 100%; display: flex; min-width: 600px; overflow: hidden; }
+.avail-seg { height: 100%; flex-shrink: 0; }
+
+.legend { display: flex; gap: 1.25rem; font-size: 0.78rem; color: var(--dim); }
+.avail-legend { margin-top: 0.75rem; margin-left: 240px; }
+.delta-legend { margin-bottom: 0.5rem; }
+.legend-swatch { display: inline-block; width: 12px; height: 12px; border-radius: 2px; vertical-align: middle; margin-right: 4px; }
+.dl-rect { display: inline-block; width: 12px; height: 12px; border-radius: 2px; background: rgba(59,130,246,0.55); border: 1px solid rgba(59,130,246,0.8); vertical-align: middle; margin-right: 4px; }
+.dl-line { display: inline-block; width: 16px; height: 0; border-top: 2px solid rgba(249,115,22,0.95); vertical-align: middle; margin-right: 4px; position: relative; top: -1px; }
+</style>
+</head>
+<body>
+
+<header>
+  <h1>Bitcoin Block Arrival Time Dataset</h1>
+  <p>
+    A dataset of millisecond-precision block arrival timestamps as seen by multiple Bitcoin nodes.
+  </p>
+  <p>
+    Unlike block header timestamps, which are set by the miner and can
+    be inaccurate by up to two hours, arrival times reflect when a block was actually
+    observed on the network. These timestamps are ephemeral and are lost if not collected.
+    They are valuable for various analysis and research topics.
+    Data and code on <a href="https://github.com/bitcoin-data/block-arrival-times">GitHub</a>.
+  </p>
+  <p>
+    Running a Bitcoin node or collecting block arrival times some other way? <a href="https://github.com/bitcoin-data/block-arrival-times#adding-data">Contribute your block arrival times</a> to help grow the <a href="https://creativecommons.org/publicdomain/zero/1.0/">CC0 1.0</a> dataset.
+  </p>
+  <a class="data-link" href="https://github.com/bitcoin-data/block-arrival-times/tree/main/data">View Data GitHub</a>
+</header>
+
+<main>
+
+  <section>
+    <h2>Overview</h2>
+    <div class="stat-grid">
+      <div class="stat-card">
+        <div class="stat-value" id="s-sources">—</div>
+        <div class="stat-label">data sources</div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-value" id="s-records">—</div>
+        <div class="stat-label">total timestamps</div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-value" id="s-heights">—</div>
+        <div class="stat-label">height coverage</div>
+      </div>
+      <div class="stat-card">
+        <div class="stat-value" id="s-span">—</div>
+        <div class="stat-label">date coverage</div>
+      </div>
+    </div>
+  </section>
+
+  <section>
+    <h2>Data Availability</h2>
+    <p class="desc">
+      Each row represents one data source. The x-axis shows block height.
+      Each cell covers 1008 blocks (~1 week). Coverage is the fraction of
+      reference blocks present in that window. Gaps within a source's active range appear in red.
+    </p>
+    <div id="avail-wrap">
+      <div class="avail-axis" id="avail-axis"></div>
+      <div id="avail-rows"></div>
+      <div class="legend avail-legend">
+        <span><span class="legend-swatch" style="background:rgba(59,130,246,1)"></span>Full coverage</span>
+        <span><span class="legend-swatch" style="background:rgba(59,130,246,0.35)"></span>Partial coverage</span>
+        <span><span class="legend-swatch" style="background:#7f1d1d"></span>Gap (no data in range)</span>
+      </div>
+    </div>
+  </section>
+
+  <section>
+    <h2>Arrival Time vs Block Header Timestamp delta</h2>
+    <p class="desc">
+      Difference between the recorded arrival timestamp and the block's header timestamp
+      (arrival&nbsp;−&nbsp;header). Boxes show the 25th–75th percentile range; the orange line marks the median.
+    </p>
+    <div class="legend delta-legend">
+      <span><span class="dl-rect"></span>p25 – p75</span>
+      <span><span class="dl-line"></span>median</span>
+    </div>
+    <div id="delta-wrap"><canvas id="delta-chart"></canvas></div>
+  </section>
+
+</main>
+
+<footer>
+  <span>
+    <a href="https://github.com/bitcoin-data/block-arrival-times">bitcoin-data/block-arrival-times</a>
+    · Data released under <a href="https://creativecommons.org/publicdomain/zero/1.0/">CC0 1.0</a>
+  </span>
+  <span id="footer-gen"></span>
+</footer>
+
+<script>
+function fmtDate(ms) {
+  return new Date(ms).toISOString().slice(0, 7); // YYYY-MM
+}
+
+function fmtSec(ms) {
+  if (ms == null) return '—';
+  const s = ms / 1000;
+  return (s >= 0 ? '+' : '') + s.toFixed(1) + 's';
+}
+
+function toSec(ms) { return ms == null ? null : ms / 1000; }
+
+async function main() {
+  let stats;
+  try {
+    const resp = await fetch('stats.json');
+    if (!resp.ok) throw new Error(resp.statusText);
+    stats = await resp.json();
+  } catch (e) {
+    document.querySelector('main').innerHTML =
+      `<p style="color:#ef4444;padding:2rem">Failed to load stats.json: ${e.message}</p>`;
+    return;
+  }
+
+  renderOverview(stats);
+  renderAvailability(stats);
+  renderDeltaChart(stats);
+}
+
+function renderOverview(stats) {
+  const totalRecords = stats.sources.reduce((s, src) => s + src.block_count, 0);
+  const allMin = stats.sources.reduce((m, s) => Math.min(m, s.timestamp_min_ms), Infinity);
+  const allMax = stats.sources.reduce((m, s) => Math.max(m, s.timestamp_max_ms), 0);
+
+  document.getElementById('s-sources').textContent  = stats.sources.length;
+  document.getElementById('s-records').textContent  = totalRecords;
+  document.getElementById('s-heights').textContent  = stats.height_min + ' – ' + stats.height_max;
+  document.getElementById('s-span').textContent     = fmtDate(allMin) + ' – ' + fmtDate(allMax);
+  document.getElementById('footer-gen').textContent = 'Generated ' + stats.generated_at.slice(0, 10);
+}
+
+function renderAvailability(stats) {
+  const totalBuckets = stats.bucket_max - stats.bucket_min + 1;
+
+  // Block height tick axis — pick a round interval that gives ~6–10 ticks
+  const heightRange = stats.height_max - stats.height_min;
+  const rawInterval = heightRange / 8;
+  const magnitude   = Math.pow(10, Math.floor(Math.log10(rawInterval)));
+  const tickInterval = Math.ceil(rawInterval / magnitude) * magnitude;
+  const tickStart    = Math.ceil(stats.height_min / tickInterval) * tickInterval;
+
+  const axis = document.getElementById('avail-axis');
+  for (let h = tickStart; h <= stats.height_max; h += tickInterval) {
+    const b   = Math.floor(h / stats.bucket_size);
+    const pct = (b - stats.bucket_min) / totalBuckets * 100;
+    const el  = document.createElement('div');
+    el.className = 'avail-tick';
+    el.style.left = pct + '%';
+    el.textContent = (h / 1000).toFixed(0) + 'k';
+    axis.appendChild(el);
+  }
+
+  const container = document.getElementById('avail-rows');
+
+  for (const src of stats.sources) {
+    const coverageMap = new Map(src.coverage);
+    const bMin = Math.floor(src.height_min / stats.bucket_size);
+    const bMax = Math.floor(src.height_max / stats.bucket_size);
+
+    const row = document.createElement('div');
+    row.className = 'avail-row';
+    row.title = src.name;
+
+    const label = document.createElement('div');
+    label.className = 'avail-label';
+    label.textContent = src.name;
+    row.appendChild(label);
+
+    const bar = document.createElement('div');
+    bar.className = 'avail-bar';
+
+    // Space before this source's range
+    const beforePct = (bMin - stats.bucket_min) / totalBuckets * 100;
+    appendSeg(bar, beforePct, 'transparent');
+
+    // Covered range
+    const bucketWidthPct = 1 / totalBuckets * 100;
+    for (let b = bMin; b <= bMax; b++) {
+      const frac = coverageMap.has(b) ? coverageMap.get(b) : 0;
+      let color;
+      if (frac <= 0) {
+        color = '#7f1d1d'; // red gap
+      } else {
+        const alpha = (0.35 + frac * 0.65).toFixed(2);
+        color = `rgba(59,130,246,${alpha})`;
+      }
+      appendSeg(bar, bucketWidthPct, color);
+    }
+
+    row.appendChild(bar);
+    container.appendChild(row);
+  }
+}
+
+function appendSeg(parent, widthPct, color) {
+  if (widthPct <= 0) return;
+  const seg = document.createElement('div');
+  seg.className = 'avail-seg';
+  seg.style.width = widthPct + '%';
+  seg.style.backgroundColor = color;
+  parent.appendChild(seg);
+}
+
+function renderDeltaChart(stats) {
+  const ctx = document.getElementById('delta-chart').getContext('2d');
+
+  const labels    = stats.sources.map(s => s.name);
+  const p25p75 = stats.sources.map(s => [toSec(s.delta_stats_ms.p25), toSec(s.delta_stats_ms.p75)]);
+
+  const medianPlugin = {
+    id: 'medianLines',
+    afterDraw(chart) {
+      const meta = chart.getDatasetMeta(0);
+      const c = chart.ctx;
+      c.save();
+      c.strokeStyle = 'rgba(249,115,22,0.95)';
+      c.lineWidth = 2;
+      stats.sources.forEach((src, i) => {
+        const m = toSec(src.delta_stats_ms.p50);
+        if (m == null) return;
+        const bar = meta.data[i];
+        const x   = chart.scales.x.getPixelForValue(m);
+        c.beginPath();
+        c.moveTo(x, bar.y - bar.height / 2);
+        c.lineTo(x, bar.y + bar.height / 2);
+        c.stroke();
+      });
+      c.restore();
+    },
+  };
+
+  const chartHeight = Math.max(300, stats.sources.length * 28);
+  document.getElementById('delta-wrap').style.height = chartHeight + 'px';
+
+  new Chart(ctx, {
+    type: 'bar',
+    plugins: [medianPlugin],
+    data: {
+      labels,
+      datasets: [
+        {
+          label: 'p25 – p75',
+          data: p25p75,
+          backgroundColor: 'rgba(59,130,246,0.55)',
+          borderColor:     'rgba(59,130,246,0.8)',
+          borderWidth: 1,
+          borderSkipped: false,
+          barPercentage: 0.5,
+          categoryPercentage: 0.9,
+        },
+      ],
+    },
+    options: {
+      indexAxis: 'y',
+      animation: false,
+      responsive: true,
+      maintainAspectRatio: false,
+      plugins: {
+        legend: { display: false },
+        tooltip: {
+          callbacks: {
+            title: (items) => items[0].label,
+            label: (item) => {
+              const src = stats.sources[item.dataIndex];
+              const d   = src.delta_stats_ms;
+              return [
+                `  p25: ${fmtSec(d.p25)}`,
+                `  p50: ${fmtSec(d.p50)}`,
+                `  p75: ${fmtSec(d.p75)}`,
+                `  n:   ${d.count}`,
+              ];
+            },
+            afterBody: () => [],
+          },
+          mode: 'index',
+          filter: (item) => item.datasetIndex === 0,
+        },
+      },
+      scales: {
+        x: {
+          title: {
+            display: true,
+            text: 'arrival − header timestamp (seconds)',
+            color: '#94a3b8',
+            font: { size: 11 },
+          },
+          ticks: { color: '#94a3b8', font: { size: 10 } },
+          grid:  { color: '#1e293b' },
+        },
+        y: {
+          ticks: {
+            color: '#94a3b8',
+            font: { family: 'monospace', size: 10 },
+          },
+          grid: { color: '#334155' },
+        },
+      },
+    },
+  });
+}
+
+main();
+</script>
+</body>
+</html>
